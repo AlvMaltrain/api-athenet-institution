@@ -1,28 +1,26 @@
 package com.athenet.institution.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.persistence.Column;
 
-
-@Entity
-@Table(name = "instituciones")
-@Schema(description = "Entidad que representa una institución educativa ")
 @Getter
 @Setter 
 @NoArgsConstructor 
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
+@Entity
+@Table(name = "institucion")
+@Schema(description = "Entidad que representa una institución educativa ")
 public class Institucion {
 
     @Id
@@ -46,4 +44,12 @@ public class Institucion {
     @Schema (description = "Actividad de la institución")
     private boolean activo = true; 
 
+    public Long getId() {
+    return id;
 }
+
+public String getNombre() {
+    return nombre;
+}
+}
+
