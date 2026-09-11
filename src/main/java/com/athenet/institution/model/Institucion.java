@@ -35,12 +35,6 @@ public class Institucion {
     @Schema(description = "Sigla de la institución")
     private String sigla;
 
-    @Schema (description = "Ciudad de la institución")
-    private String ciudad;
-
-    @Schema (description = "Región de la institución")
-    private String region;
-
     @Schema (description = "Actividad de la institución")
     private boolean activo = true; 
 
