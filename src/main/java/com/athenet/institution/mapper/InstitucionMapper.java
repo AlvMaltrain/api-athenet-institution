@@ -13,16 +13,12 @@ public class InstitucionMapper {
         Institucion institucion = new Institucion();
         institucion.setNombre(request.nombre());
         institucion.setSigla(request.sigla());
-        institucion.setCiudad(request.ciudad());
-        institucion.setRegion(request.region());
         return institucion;
     }
 
     public void updateEntity(Institucion institucion, InstitucionRequest request) {
         institucion.setNombre(request.nombre());
         institucion.setSigla(request.sigla());
-        institucion.setCiudad(request.ciudad());
-        institucion.setRegion(request.region());
     }
 
     public InstitucionResponse toResponse(Institucion institucion) {
@@ -30,8 +26,6 @@ public class InstitucionMapper {
                 institucion.getId(),
                 institucion.getNombre(),
                 institucion.getSigla(),
-                institucion.getCiudad(),
-                institucion.getRegion(),
                 institucion.isActivo()
         );
     }
