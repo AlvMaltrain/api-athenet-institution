@@ -2,8 +2,15 @@ server:
   port: 8080
 
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://login.microsoftonline.com/bfbc730b-74fb-4552-b74c-c93431273927/v2.0
+          
   application:
     name: institution-service
+
 
   datasource:
     url: jdbc:postgresql://localhost:5432/institucion_db
