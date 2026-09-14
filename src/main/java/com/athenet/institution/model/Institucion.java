@@ -35,6 +35,9 @@ public class Institucion {
     @Schema(description = "Sigla de la institución")
     private String sigla;
 
+    @Schema (description = "URL de la imagen o logo de la institución")
+    private String imagenUrl;
+
     @Schema (description = "Actividad de la institución")
     private boolean activo = true; 
 

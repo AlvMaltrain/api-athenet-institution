@@ -13,12 +13,14 @@ public class InstitucionMapper {
         Institucion institucion = new Institucion();
         institucion.setNombre(request.nombre());
         institucion.setSigla(request.sigla());
+        institucion.setImagenUrl(request.imagenUrl());
         return institucion;
     }
 
     public void updateEntity(Institucion institucion, InstitucionRequest request) {
         institucion.setNombre(request.nombre());
         institucion.setSigla(request.sigla());
+        institucion.setImagenUrl(request.imagenUrl());
     }
 
     public InstitucionResponse toResponse(Institucion institucion) {
@@ -26,6 +28,7 @@ public class InstitucionMapper {
                 institucion.getId(),
                 institucion.getNombre(),
                 institucion.getSigla(),
+                institucion.getImagenUrl(),
                 institucion.isActivo()
         );
     }

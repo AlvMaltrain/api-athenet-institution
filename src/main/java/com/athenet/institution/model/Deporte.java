@@ -32,5 +32,8 @@ public class Deporte {
     @Column(nullable = false, unique = true, length = 100)
     @Schema(description = "Nombre del deporte")
     private String nombre;
+
+    @Schema(description = "Descripción del deporte")
+    private String descripcion;
    
 }
