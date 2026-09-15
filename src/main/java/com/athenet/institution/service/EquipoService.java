@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.athenet.institution.dto.request.EquipoRequest;
 import com.athenet.institution.dto.response.EquipoResponse;
+import com.athenet.institution.exception.ConflictException;
 import com.athenet.institution.exception.ResourceNotFoundException;
 import com.athenet.institution.mapper.EquipoMapper;
 import com.athenet.institution.model.Deporte;
@@ -37,6 +38,12 @@ public class EquipoService {
     public EquipoResponse crear(EquipoRequest request) {
         Sede sede = buscarSede(request.sedeId());
         Deporte deporte = buscarDeporte(request.deporteId());
+
+        if (equipoRepository.existsBySedeIdAndNombreIgnoreCase(sede.getId(), request.nombre())) {
+            throw new ConflictException(
+                    "Ya existe un equipo con el nombre '" + request.nombre() + "' en esa sede");
+        }
+
         Equipo equipo = equipoMapper.toEntity(request, sede, deporte);
         return equipoMapper.toResponse(equipoRepository.save(equipo));
     }
@@ -87,6 +94,14 @@ public class EquipoService {
         Equipo equipo = buscarEntidadPorId(id);
         Sede sede = buscarSede(request.sedeId());
         Deporte deporte = buscarDeporte(request.deporteId());
+
+        equipoRepository.findBySedeIdAndNombreIgnoreCase(sede.getId(), request.nombre())
+                .filter(existente -> !existente.getId().equals(id))
+                .ifPresent(existente -> {
+                    throw new ConflictException(
+                            "Ya existe un equipo con el nombre '" + request.nombre() + "' en esa sede");
+                });
+
         equipoMapper.updateEntity(equipo, request, sede, deporte);
         return equipoMapper.toResponse(equipoRepository.save(equipo));
     }

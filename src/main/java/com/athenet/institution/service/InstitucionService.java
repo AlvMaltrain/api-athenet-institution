@@ -56,6 +56,13 @@ public class InstitucionService {
     @Transactional
     public InstitucionResponse actualizar(Long id, InstitucionRequest request) {
         Institucion institucion = buscarEntidadPorId(id);
+
+        institucionRepository.findByNombreIgnoreCase(request.nombre())
+                .filter(existente -> !existente.getId().equals(id))
+                .ifPresent(existente -> {
+                    throw new ConflictException("Ya existe una institución con el nombre '" + request.nombre() + "'");
+                });
+
         institucionMapper.updateEntity(institucion, request);
         return institucionMapper.toResponse(institucionRepository.save(institucion));
     }

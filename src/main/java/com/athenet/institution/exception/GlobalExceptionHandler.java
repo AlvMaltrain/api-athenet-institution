@@ -1,6 +1,7 @@
 package com.athenet.institution.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -56,6 +57,22 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    // Red de seguridad: cualquier violación de constraint de base de datos
+    // (unique, not-null, FK) que no haya sido detectada antes a nivel de
+    // servicio (ej. condición de carrera entre el existsBy... y el save,
+    // o un caso no cubierto todavía) se traduce en un 409 legible en vez
+    // de un 500 genérico.
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        ApiError body = new ApiError(
+                java.time.LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                "El recurso ya existe o entra en conflicto con datos existentes."
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
     @ExceptionHandler(Exception.class)

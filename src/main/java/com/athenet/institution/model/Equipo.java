@@ -18,6 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,7 +32,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Entity
-@Table(name = "equipo")
+@Table(name = "equipo", uniqueConstraints = @UniqueConstraint(columnNames = {"sede_id", "nombre"}))
 @Schema(description = "Entidad que representa un equipo deportivo de una institución")
 public class Equipo {
 

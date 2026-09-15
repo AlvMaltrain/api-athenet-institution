@@ -64,6 +64,13 @@ public class DeporteService {
     @Transactional
     public DeporteResponse actualizar(Long id, DeporteRequest request) {
         Deporte deporte = buscarEntidadPorId(id);
+
+        deporteRepository.findByNombreIgnoreCase(request.nombre())
+                .filter(existente -> !existente.getId().equals(id))
+                .ifPresent(existente -> {
+                    throw new ConflictException("Ya existe un deporte con el nombre '" + request.nombre() + "'");
+                });
+
         deporteMapper.updateEntity(deporte, request);
         return deporteMapper.toResponse(deporteRepository.save(deporte));
     }
