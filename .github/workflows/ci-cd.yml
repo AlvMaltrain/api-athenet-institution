@@ -29,7 +29,9 @@ jobs:
           cache: maven
 
       - name: Compilar y correr tests
-        run: ./mvnw -B clean verify
+        run: |
+          chmod +x mvnw
+          ./mvnw -B clean verify
 
   build-and-push-image:
     name: Build & push imagen Docker
