@@ -15,7 +15,9 @@ public record InstitucionRequest(
     String sigla,
 
     @Size(max = 255, message = "La URL de la imagen no puede superar los 255 caracteres")
-    String imagenUrl
+    String imagenUrl,
+
+    boolean activo
 ) {
 
 }

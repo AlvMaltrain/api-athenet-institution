@@ -2,6 +2,7 @@ package com.athenet.institution.service;
 
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,11 +78,23 @@ public class DeporteService {
 
     /**
      * Elimina un deporte por su id.
+     * Si tiene equipos (u otros registros) que dependen de él, la base
+     * de datos rechaza el DELETE por violación de llave foránea; en ese
+     * caso lo traducimos a un 409 explícito en vez del genérico de la red
+     * de seguridad de GlobalExceptionHandler.
      */
     @Transactional
     public void eliminar(Long id) {
         Deporte deporte = buscarEntidadPorId(id);
-        deporteRepository.delete(deporte);
+        try {
+            deporteRepository.delete(deporte);
+            deporteRepository.flush();
+        } catch (DataIntegrityViolationException ex) {
+            throw new ConflictException(
+                    "No se puede eliminar el deporte '" + deporte.getNombre()
+                            + "' porque tiene equipos (u otros registros) asociados. Elimina o reasigna esos registros primero."
+            );
+        }
     }
 
     /**
