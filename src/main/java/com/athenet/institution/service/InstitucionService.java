@@ -6,6 +6,7 @@ import com.athenet.institution.mapper.InstitucionMapper;
 import com.athenet.institution.model.Institucion;
 import com.athenet.institution.repository.InstitucionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.athenet.institution.exception.ConflictException;
@@ -69,11 +70,23 @@ public class InstitucionService {
 
     /**
      * Elimina una institución por su id.
+     * Si tiene sedes (u otros registros) que dependen de ella, la base de
+     * datos rechaza el DELETE por violación de llave foránea; en ese caso
+     * lo traducimos a un 409 explícito en vez del genérico de la red de
+     * seguridad de GlobalExceptionHandler.
      */
     @Transactional
     public void eliminar(Long id) {
         Institucion institucion = buscarEntidadPorId(id);
-        institucionRepository.delete(institucion);
+        try {
+            institucionRepository.delete(institucion);
+            institucionRepository.flush();
+        } catch (DataIntegrityViolationException ex) {
+            throw new ConflictException(
+                    "No se puede eliminar la institución '" + institucion.getNombre()
+                            + "' porque tiene sedes (u otros registros) asociados. Elimina o reasigna esos registros primero."
+            );
+        }
     }
 
     /**

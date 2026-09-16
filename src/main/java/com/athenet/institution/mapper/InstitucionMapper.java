@@ -14,6 +14,7 @@ public class InstitucionMapper {
         institucion.setNombre(request.nombre());
         institucion.setSigla(request.sigla());
         institucion.setImagenUrl(request.imagenUrl());
+        institucion.setActivo(request.activo());
         return institucion;
     }
 
@@ -21,6 +22,7 @@ public class InstitucionMapper {
         institucion.setNombre(request.nombre());
         institucion.setSigla(request.sigla());
         institucion.setImagenUrl(request.imagenUrl());
+        institucion.setActivo(request.activo());
     }
 
     public InstitucionResponse toResponse(Institucion institucion) {

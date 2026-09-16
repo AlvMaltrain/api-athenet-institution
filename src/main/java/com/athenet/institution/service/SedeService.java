@@ -2,6 +2,7 @@ package com.athenet.institution.service;
 
 import com.athenet.institution.dto.request.SedeRequest;
 import com.athenet.institution.dto.response.SedeResponse;
+import com.athenet.institution.exception.ConflictException;
 import com.athenet.institution.exception.ResourceNotFoundException;
 import com.athenet.institution.mapper.SedeMapper;
 import com.athenet.institution.model.Institucion;
@@ -9,6 +10,7 @@ import com.athenet.institution.model.Sede;
 import com.athenet.institution.repository.InstitucionRepository;
 import com.athenet.institution.repository.SedeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,11 +76,23 @@ public class SedeService {
 
     /**
      * Elimina una sede por su id.
+     * Si tiene equipos (u otros registros) que dependen de ella, la base
+     * de datos rechaza el DELETE por violación de llave foránea; en ese
+     * caso lo traducimos a un 409 explícito en vez del genérico de la red
+     * de seguridad de GlobalExceptionHandler.
      */
     @Transactional
     public void eliminar(Long id) {
         Sede sede = buscarEntidadPorId(id);
-        sedeRepository.delete(sede);
+        try {
+            sedeRepository.delete(sede);
+            sedeRepository.flush();
+        } catch (DataIntegrityViolationException ex) {
+            throw new ConflictException(
+                    "No se puede eliminar la sede '" + sede.getNombre()
+                            + "' porque tiene equipos (u otros registros) asociados. Elimina o reasigna esos registros primero."
+            );
+        }
     }
 
     private Sede buscarEntidadPorId(Long id) {
