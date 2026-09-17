@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,6 +28,14 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Configuration
 public class SecurityConfig {
+
+    /**
+     * Origenes permitidos via CORS (front admin, front publico, y sus
+     * variantes en local mientras se desarrolla). Ver application.yml /
+     * variable de entorno CORS_ALLOWED_ORIGINS.
+     */
+    @Value("${athenet.cors.allowed-origins}")
+    private List<String> allowedOrigins;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .findAndRegisterModules()
@@ -118,7 +127,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("http://localhost:4200"));
+        cfg.setAllowedOrigins(allowedOrigins);
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin"));
         cfg.setAllowCredentials(true);
