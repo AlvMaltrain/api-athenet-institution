@@ -1,0 +1,16 @@
+# Compose de produccion (EC2). En el servidor se copia como "docker-compose.yml".
+# Sin Postgres local: la app usa la base en Amazon RDS (DB_URL en .env).
+# Para desarrollo local sigue usandose docker-compose.yml (con su propia base).
+services:
+  app:
+    image: ${IMAGE:-ghcr.io/alvmaltrain/api-athenet-institution:latest}
+    container_name: athenet-institucion-app
+    restart: unless-stopped
+    environment:
+      DB_URL: ${DB_URL:?definir DB_URL en .env}
+      DB_USERNAME: ${DB_USERNAME:?definir DB_USERNAME en .env}
+      DB_PASSWORD: ${DB_PASSWORD:?definir DB_PASSWORD en .env}
+      JWT_ISSUER_URI: ${JWT_ISSUER_URI:?definir JWT_ISSUER_URI en .env}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200,http://localhost:5173}
+    ports:
+      - "8080:8080"

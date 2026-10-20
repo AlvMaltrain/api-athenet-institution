@@ -131,3 +131,38 @@ de entorno en tu IDE):
 export DB_PASSWORD=simurdiera77   # o la clave que uses en tu Postgres local
 ./mvnw spring-boot:run
 ```
+
+## Base de datos en Amazon RDS (produccion)
+
+En la EC2 la app no levanta Postgres propio: usa la instancia RDS
+compartida (misma instancia que Ranking, pero **base y usuario propios**).
+
+1. Quien administra la RDS crea la base y el usuario (conectado como admin):
+
+   ```sql
+   CREATE USER institucion_user WITH PASSWORD '<clave-segura>';
+   CREATE DATABASE institucion_db OWNER institucion_user;
+   ```
+
+2. En el Security Group de la RDS se agrega una regla inbound TCP 5432 con
+   origen `<IP-elastica-de-la-EC2-de-instituciones>/32`.
+3. En la EC2, `/opt/athenet-institution/.env`:
+
+   ```env
+   DB_URL=jdbc:postgresql://<endpoint-rds>:5432/institucion_db?sslmode=require
+   DB_USERNAME=institucion_user
+   DB_PASSWORD=<clave>
+   JWT_ISSUER_URI=https://login.microsoftonline.com/bfbc730b-74fb-4552-b74c-c93431273927/v2.0
+   CORS_ALLOWED_ORIGINS=<origenes-separados-por-coma>
+   IMAGE=ghcr.io/alvmaltrain/api-athenet-institution:latest
+   ```
+
+4. Se copia `docker-compose.prod.yml` como `docker-compose.yml`:
+
+   ```bash
+   scp -i tu-clave.pem docker-compose.prod.yml ec2-user@<IP-EC2>:/opt/athenet-institution/docker-compose.yml
+   ```
+
+El esquema lo crea Hibernate (`ddl-auto: update`) al arrancar. Si la base
+local tenia datos (catalogo de deportes, instituciones, equipos), hay que
+migrarlos antes de cambiar (`pg_dump` del contenedor y restaurar en la RDS).
